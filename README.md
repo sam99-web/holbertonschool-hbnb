@@ -60,29 +60,6 @@ The application implements the **Facade Pattern** to provide a simplified interf
 
 ### 2.3 High-Level Package Diagram
 
-```mermaid
-graph TB
-    subgraph Presentation["Presentation Layer"]
-        API[Services/API<br/>RESTful Endpoints]
-    end
-    
-    subgraph Business["Business Logic Layer"]
-        Facade[Facade Pattern<br/>Simplified Interface]
-        Models[Models<br/>User, Place, Review, Amenity]
-    end
-    
-    subgraph Persistence["Persistence Layer"]
-        DB[(Database<br/>Storage)]
-    end
-    
-    API -->|Uses| Facade
-    Facade -->|Manages| Models
-    Models -->|Persisted in| DB
-    
-    style Presentation fill:#e1f5ff
-    style Business fill:#fff4e1
-    style Persistence fill:#f0e1ff
-```
 
 ### 2.4 Layer Responsibilities
 
@@ -134,64 +111,8 @@ The system is built around four main entities:
 
 ### 3.3 Detailed Class Diagram
 
-```mermaid
-classDiagram
-    class User {
-        -String id
-        -String email
-        -String password
-        -String first_name
-        -String last_name
-        -DateTime created_at
-        -DateTime updated_at
-        +register()
-        +login()
-        +update_profile()
-        +delete_account()
-    }
-    
-    class Place {
-        -String id
-        -String title
-        -String description
-        -Float price
-        -Float latitude
-        -Float longitude
-        -String owner_id
-        -DateTime created_at
-        -DateTime updated_at
-        +create()
-        +update()
-        +delete()
-        +get_details()
-    }
-    
-    class Review {
-        -String id
-        -String place_id
-        -String user_id
-        -Integer rating
-        -String comment
-        -DateTime created_at
-        +submit_review()
-        +update_review()
-        +delete_review()
-    }
-    
-    class Amenity {
-        -String id
-        -String name
-        -String description
-        +create()
-        +update()
-        +delete()
-    }
-    
-    User "1" --> "0..*" Place : owns
-    User "1" --> "0..*" Review : writes
-    Place "1" --> "0..*" Review : has
-    Place "0..*" --> "0..*" Amenity : offers
-```
+<img width="1983" height="1471" alt="mermaid-diagram-2026-02-11-162915" src="https://github.com/user-attachments/assets/65e792d1-8c05-4897-b2da-f0b7af375b51" />
+
 
 ### 3.4 Entity Specifications
 
@@ -359,28 +280,8 @@ When a new user registers, the system validates the email format, checks for dup
 
 #### Sequence Diagram
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant API as Presentation Layer (API)
-    participant BL as Business Logic Layer (User Model)
-    participant DB as Persistence Layer (Database)
+<img width="1983" height="1360" alt="mermaid-diagram-2026-02-12-123402" src="https://github.com/user-attachments/assets/c85b56d3-39ef-469f-8c67-b0d80b353a7d" />
 
-    Client->>API: POST /api/users (email, password, name)
-    API->>API: Validate request format
-    API->>BL: Create User(email, password, name)
-    BL->>BL: Validate email format
-    BL->>DB: Check if email exists
-    DB-->>BL: Return email status
-    BL->>BL: Hash password
-    BL->>BL: Generate user ID
-    BL->>DB: Save user data
-    DB-->>BL: Confirm save
-    BL-->>API: Return User object
-    API-->>Client: 201 Created (user_id, email, name)
-    
-    Note over API,Client: Possible Errors:<br/>400 - Invalid format/email<br/>409 - Email already exists<br/>500 - Database error
-```
 
 #### Design Notes
 - **Security**: Password is hashed before storage (never stored in plain text)
@@ -411,29 +312,8 @@ An authenticated user creates a new property listing. The system verifies the us
 
 #### Sequence Diagram
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant API as Presentation Layer (API)
-    participant BL as Business Logic Layer (Place Model)
-    participant DB as Persistence Layer (Database)
+<img width="1983" height="1360" alt="mermaid-diagram-2026-02-12-123434" src="https://github.com/user-attachments/assets/5d28e76c-468e-4ab4-8786-aa5d0a321b8a" />
 
-    Client->>API: POST /api/places (name, description, price, location, user_id)
-    API->>API: Authenticate user token
-    API->>BL: Create Place(data)
-    BL->>BL: Validate required fields
-    BL->>BL: Validate price > 0
-    BL->>DB: Verify user exists
-    DB-->>BL: Return user status
-    BL->>BL: Generate place ID
-    BL->>BL: Set creation timestamp
-    BL->>DB: Save place data
-    DB-->>BL: Confirm save
-    BL-->>API: Return Place object
-    API-->>Client: 201 Created (place_id, name, price, location)
-    
-    Note over API,Client: Possible Errors:<br/>401 - Invalid token<br/>400 - Missing fields/Invalid price<br/>404 - User not found<br/>500 - Database error
-```
 
 #### Design Notes
 - **Authentication**: Token validated before any business logic executes
@@ -468,33 +348,8 @@ A user submits a review for a place they visited. The system validates the ratin
 
 #### Sequence Diagram
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant API as Presentation Layer (API)
-    participant BL as Business Logic Layer (Review Model)
-    participant DB as Persistence Layer (Database)
+<img width="1983" height="1360" alt="mermaid-diagram-2026-02-12-123446" src="https://github.com/user-attachments/assets/56c308bd-feee-450f-b9d2-b86ae6e101e6" />
 
-    Client->>API: POST /api/reviews (place_id, user_id, rating, comment)
-    API->>API: Authenticate user token
-    API->>BL: Create Review(place_id, user_id, rating, comment)
-    BL->>BL: Validate rating (1-5)
-    BL->>DB: Check place exists
-    DB-->>BL: Return place status
-    BL->>DB: Check user exists
-    DB-->>BL: Return user status
-    BL->>DB: Check duplicate review
-    DB-->>BL: Return review status
-    BL->>BL: Generate review ID
-    BL->>DB: Save review data
-    DB-->>BL: Confirm save
-    BL->>DB: Update place average rating
-    DB-->>BL: Confirm rating update
-    BL-->>API: Return Review object
-    API-->>Client: 201 Created (review_id, rating, comment, date)
-    
-    Note over API,Client: Possible Errors:<br/>401 - Invalid token<br/>400 - Invalid rating<br/>404 - Place/User not found<br/>409 - Review already exists<br/>500 - Database error
-```
 
 #### Design Notes
 - **Duplicate Prevention**: System enforces one review per user per place
@@ -526,27 +381,8 @@ A user requests a list of places based on search criteria such as location and p
 
 #### Sequence Diagram
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant API as Presentation Layer (API)
-    participant BL as Business Logic Layer (Place Model)
-    participant DB as Persistence Layer (Database)
+<img width="1983" height="1360" alt="mermaid-diagram-2026-02-12-123506" src="https://github.com/user-attachments/assets/86ee567c-1d60-4649-b23c-6e418b7f55fa" />
 
-    Client->>API: GET /api/places?location=Paris&max_price=100
-    API->>API: Parse query parameters
-    API->>BL: Get Places(filters)
-    BL->>BL: Validate filter parameters
-    BL->>BL: Build query criteria
-    BL->>DB: Query places with filters
-    DB-->>BL: Return matching places
-    BL->>BL: Sort by relevance/date
-    BL->>BL: Format place data
-    BL-->>API: Return list of Place objects
-    API-->>Client: 200 OK (places array)
-    
-    Note over API,Client: Possible Errors:<br/>400 - Invalid query format/price range<br/>500 - Database query error<br/>200 - Empty array if no results
-```
 
 #### Design Notes
 - **Optional Filters**: All query parameters are optional; no filters returns all places
