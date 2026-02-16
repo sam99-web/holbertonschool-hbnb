@@ -60,7 +60,7 @@ The application implements the **Facade Pattern** to provide a simplified interf
 
 ### 2.3 High-Level Package Diagram
 
-<img width="1983" height="1456" alt="mermaid-diagram-2026-02-16-114917" src="https://github.com/user-attachments/assets/dc8b41bd-abf1-4d8d-87e4-515786b32da9" />
+<img width="1074" height="1520" alt="API-Driven_Review_Ecosystem-2026-02-16-105122" src="https://github.com/user-attachments/assets/2ba3c6ca-c82c-4f02-936b-f5cbc93bad8f" />
 
 
 ### 2.4 Layer Responsibilities
