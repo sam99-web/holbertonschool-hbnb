@@ -111,7 +111,7 @@ The system is built around four main entities:
 
 ### 3.3 Detailed Class Diagram
 
-<img width="1983" height="1471" alt="mermaid-diagram-2026-02-11-162915" src="https://github.com/user-attachments/assets/65e792d1-8c05-4897-b2da-f0b7af375b51" />
+<img width="1983" height="1471" alt="mermaid-diagram-2026-02-11-162915" src="https://github.com/user-attachments/assets/b8997064-1e91-4e2d-b250-b83fa5edf167" />
 
 
 ### 3.4 Entity Specifications
