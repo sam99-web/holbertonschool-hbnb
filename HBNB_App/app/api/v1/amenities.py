@@ -1,92 +1,131 @@
-from flask import request
-from flask_restx import Resource, fields, marshal
-from app.api.v1.api_blueprint import api_v1
-from app.services.facade import HBnBFacade
+"""
+Amenity Endpoints — Task 3
+==========================
+Routes disponibles :
+  POST   /api/v1/amenities/          → créer un amenity
+  GET    /api/v1/amenities/          → lister tous les amenities
+  GET    /api/v1/amenities/<id>      → récupérer un amenity par id
+  PUT    /api/v1/amenities/<id>      → mettre à jour un amenity
 
-# Initialize facade (in production, use dependency injection)
-facade = HBnBFacade()
+DELETE n'est PAS implémenté dans cette partie.
+"""
 
-# Define API models for documentation & serialization
-amenity_model = api_v1.model('Amenity', {
-    'id': fields.String(readonly=True, description='Amenity ID'),
-    'name': fields.String(required=True, description='Amenity name', min_length=1, max_length=50),
-    'description': fields.String(description='Amenity description', max_length=255),
-    'created_at': fields.DateTime(readonly=True, description='Creation timestamp'),
-    'updated_at': fields.DateTime(readonly=True, description='Last update timestamp')
-})
+from flask_restx import Namespace, Resource, fields
+from app.services import facade
 
-amenity_input_model = api_v1.model('AmenityInput', {
-    'name': fields.String(required=True, description='Amenity name', min_length=1, max_length=50),
-    'description': fields.String(description='Amenity description', max_length=255)
-})
+# ── Namespace ─────────────────────────────────────────────────────────────────
+# Un Namespace regroupe les routes liées à une même ressource.
+# Le préfixe /api/v1/amenities est déclaré dans create_app().
+api = Namespace("amenities", description="Opérations sur les amenities")
 
-@api_v1.route('/amenities')
+# ── Modèle de sérialisation (swagger + validation entrée) ─────────────────────
+# flask-restx utilise ce modèle pour :
+#   1. Générer automatiquement la doc Swagger
+#   2. Valider les champs requis dans le body JSON des requêtes
+amenity_model = api.model(
+    "Amenity",
+    {
+        "name": fields.String(
+            required=True,
+            description="Nom de l'amenity (ex: Wi-Fi, Piscine...)",
+        ),
+    },
+)
+
+# Modèle de réponse : inclut les champs générés (id, timestamps)
+amenity_response_model = api.model(
+    "AmenityResponse",
+    {
+        "id": fields.String(description="Identifiant unique UUID"),
+        "name": fields.String(description="Nom de l'amenity"),
+        "created_at": fields.String(description="Date de création ISO 8601"),
+        "updated_at": fields.String(description="Date de mise à jour ISO 8601"),
+    },
+)
+
+
+# ── /api/v1/amenities/ ────────────────────────────────────────────────────────
+@api.route("/")
 class AmenityList(Resource):
-    """Amenity collection endpoint"""
-    
-    @api_v1.doc('list_amenities')
-    @api_v1.marshal_list_with(amenity_model)
-    def get(self):
-        """List all amenities"""
-        amenities = facade.get_all_amenities()
-        return [amenity.to_dict() for amenity in amenities], 200
-    
-    @api_v1.doc('create_amenity')
-    @api_v1.expect(amenity_input_model)
-    @api_v1.marshal_with(amenity_model, code=201)
-    def post(self):
-        """Create a new amenity"""
-        data = api_v1.payload
-        
-        # Validation
-        if not data.get('name'):
-            api_v1.abort(400, 'Name is required')
-        
-        try:
-            amenity = facade.create_amenity(
-                name=data['name'],
-                description=data.get('description', '')
-            )
-            return amenity.to_dict(), 201
-        except ValueError as e:
-            api_v1.abort(400, str(e))
+    """
+    Collection d'amenities.
+    Regroupe les opérations sur la liste complète.
+    """
 
-@api_v1.route('/amenities/<string:amenity_id>')
+    @api.marshal_list_with(amenity_response_model)
+    def get(self):
+        """
+        GET /api/v1/amenities/
+        Retourne la liste de tous les amenities.
+        Réponse 200 : liste JSON des amenities.
+        """
+        amenities = facade.get_all_amenities()
+        # marshal_list_with sérialise automatiquement la liste
+        return [a.to_dict() for a in amenities], 200
+
+    @api.expect(amenity_model, validate=True)
+    @api.marshal_with(amenity_response_model, code=201)
+    def post(self):
+        """
+        POST /api/v1/amenities/
+        Crée un nouvel amenity.
+
+        Body attendu : { "name": "Wi-Fi" }
+        Réponse 201 : l'amenity créé.
+        Réponse 400 : si le nom est manquant ou invalide.
+        """
+        data = api.payload  # dict parsé depuis le body JSON
+
+        try:
+            amenity = facade.create_amenity(data)
+        except ValueError as e:
+            # 400 Bad Request pour toute erreur de validation métier
+            api.abort(400, str(e))
+
+        return amenity.to_dict(), 201
+
+
+# ── /api/v1/amenities/<amenity_id> ───────────────────────────────────────────
+@api.route("/<string:amenity_id>")
+@api.param("amenity_id", "L'identifiant unique UUID de l'amenity")
 class AmenityResource(Resource):
-    """Single amenity endpoint"""
-    
-    @api_v1.doc('get_amenity')
-    @api_v1.marshal_with(amenity_model)
-    @api_v1.response(404, 'Amenity not found')
+    """
+    Ressource individuelle d'un amenity.
+    Regroupe les opérations sur un seul amenity identifié par son UUID.
+    """
+
+    @api.marshal_with(amenity_response_model)
     def get(self, amenity_id):
-        """Retrieve a specific amenity"""
+        """
+        GET /api/v1/amenities/<amenity_id>
+        Retourne un amenity par son id.
+        Réponse 200 : l'amenity trouvé.
+        Réponse 404 : si l'id n'existe pas.
+        """
         amenity = facade.get_amenity(amenity_id)
         if not amenity:
-            api_v1.abort(404, 'Amenity not found')
+            api.abort(404, f"Amenity '{amenity_id}' introuvable.")
         return amenity.to_dict(), 200
-    
-    @api_v1.doc('update_amenity')
-    @api_v1.expect(amenity_input_model)
-    @api_v1.marshal_with(amenity_model)
-    @api_v1.response(404, 'Amenity not found')
-    @api_v1.response(400, 'Invalid input or conflict')
-    def put(self, amenity_id):
-        """Update an existing amenity"""
-        data = api_v1.payload
-        
-        # Check if amenity exists
-        existing = facade.get_amenity(amenity_id)
-        if not existing:
-            api_v1.abort(404, 'Amenity not found')
-        
-        try:
-            updated = facade.update_amenity(amenity_id, data)
-            if not updated:
-                api_v1.abort(404, 'Amenity not found')
-            return updated.to_dict(), 200
-        except ValueError as e:
-            api_v1.abort(400, str(e))
 
-# Register endpoints with namespace
-api_v1.add_resource(AmenityList, '/amenities')
-api_v1.add_resource(AmenityResource, '/amenities/<string:amenity_id>')
+    @api.expect(amenity_model, validate=True)
+    @api.marshal_with(amenity_response_model)
+    def put(self, amenity_id):
+        """
+        PUT /api/v1/amenities/<amenity_id>
+        Met à jour un amenity existant.
+
+        Body attendu : { "name": "Nouveau nom" }
+        Réponse 200 : l'amenity mis à jour.
+        Réponse 404 : si l'id n'existe pas.
+        Réponse 400 : si les données sont invalides.
+        """
+        amenity = facade.get_amenity(amenity_id)
+        if not amenity:
+            api.abort(404, f"Amenity '{amenity_id}' introuvable.")
+
+        try:
+            updated = facade.update_amenity(amenity_id, api.payload)
+        except ValueError as e:
+            api.abort(400, str(e))
+
+        return updated.to_dict(), 200
