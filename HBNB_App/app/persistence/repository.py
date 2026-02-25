@@ -1,37 +1,22 @@
-"""
-Repository en mémoire (Task 0).
-Implémente l'interface générique get/get_all/add/update/delete
-qui sera remplacée par SQLAlchemy en Part 3 sans changer le code du Facade.
-"""
-
-
-class InMemoryRepository:
-    def __init__(self):
-        self._storage = {}  # dict { id: objet }
-
-    def add(self, obj):
-        self._storage[obj.id] = obj
-
-    def get(self, obj_id):
-        return self._storage.get(obj_id)
-
-    def get_all(self):
-        return list(self._storage.values())
-
-    def update(self, obj_id, data: dict):
-        obj = self.get(obj_id)
-        if obj:
-            for key, value in data.items():
+class InMemoryRepository(Repository):
+    def __init__(self, model_class: Type[BaseModel]):
+        self._storage: Dict[str, BaseModel] = {}  # 🗄️ "Base de données" en mémoire
+        self._model_class = model_class
+    
+    def add(self, obj: BaseModel) -> None:
+        if obj.id in self._storage:
+            raise ValueError("Object already exists")
+        self._storage[obj.id] = obj  # Stocke l'objet avec son ID comme clé
+    
+    def get(self, id: str) -> Optional[BaseModel]:
+        return self._storage.get(id)  # Recherche rapide O(1)
+    
+    def update(self, id: str,  dict) -> Optional[BaseModel]:
+        obj = self._storage.get(id)
+        if obj is None:
+            return None
+        for key, value in  # Met à jour les attributs autorisés
+            if hasattr(obj, key) and key not in ['id', 'created_at', 'updated_at']:
                 setattr(obj, key, value)
-            obj.save()  # met à jour updated_at
+        obj.update()  # Refresh timestamp
         return obj
-
-    def delete(self, obj_id):
-        self._storage.pop(obj_id, None)
-
-    def get_by_attribute(self, attr: str, value):
-        """Recherche par attribut (ex: email unique pour User)."""
-        return next(
-            (obj for obj in self._storage.values() if getattr(obj, attr, None) == value),
-            None,
-        )
