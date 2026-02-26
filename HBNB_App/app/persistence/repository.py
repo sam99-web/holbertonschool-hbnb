@@ -20,5 +20,15 @@ class InMemoryRepository:
         if obj:
             for key, value in data.items():
                 setattr(obj, key, value)
-                obj.save() # BaseModel.save() — pas obj.update()
+            obj.save() # BaseModel.save() — pas obj.update()
         return obj
+        
+    def get_all(self):
+        return list(self._storage.values())
+        
+    def delete(self, obj_id: str):
+        self._storage.pop(obj_id, None)
+        
+    def get_by_attribute(self, attr: str, value):
+        return next((o for o in self._storage.values()
+            if getattr(o, attr, None) == value), None)
