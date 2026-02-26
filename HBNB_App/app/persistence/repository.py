@@ -2,10 +2,8 @@ from typing import Dict, Optional
 from app.models.base_model import BaseModel
 
 class InMemoryRepository:
-    
-    def __init__(self):
-        self._storage: Dict[str, BaseModel] = {}  # 🗄️ "Base de données" en mémoire
-        self._model_class = model_class
+    def __init__(self): # plus de model_class
+        self._storage = {}
     
     def add(self, obj: BaseModel) -> None:
         if obj.id in self._storage:
