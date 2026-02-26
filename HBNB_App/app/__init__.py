@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restx import Api
-from app.config import config
+from config import config
 from app.api.v1.api_blueprint import api_v1
 
 def create_app(config_name='default'):
@@ -22,3 +22,4 @@ def create_app(config_name='default'):
     api.add_namespace(api_v1)
     
     return app
+
