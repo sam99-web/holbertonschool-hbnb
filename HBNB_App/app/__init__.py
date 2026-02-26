@@ -1,7 +1,8 @@
 from flask import Flask
 from flask_restx import Api
 from config import config
-from app.api.v1.api_blueprint import api_v1
+from app.api.v1.amenities import api as amenities_ns
+api.add_namespace(amenities_ns, path='/amenities')
 
 def create_app(config_name='default'):
     """Application factory pattern"""
@@ -22,4 +23,5 @@ def create_app(config_name='default'):
     api.add_namespace(api_v1)
     
     return app
+
 
