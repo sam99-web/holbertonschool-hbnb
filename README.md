@@ -313,7 +313,7 @@ Les contributions sont les bienvenues !
 
 ## 👩🏾‍💻 Auteure
 
-**Ndeye Fatou Samb**  
+Ndeye Fatou Samb  and PAUL GLORIA
 📍 Montargis, France  
 📧 [keishsam99@gmail.com](mailto:keishsam99@gmail.com)  
 🐙 [github.com/sam99-web](https://github.com/sam99-web)
