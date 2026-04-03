@@ -1,62 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Place Details</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HBnB - Place Details</title>   
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <img src="logo.png" alt="HBnB Logo" class="logo" />
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="login.html" class="login-button">Login</a>
+      </nav>
+    </header>
 
-<body>
+    <main>
+      <a href="index.html" class="back-link">&#8592; Back to places</a>
 
-<header>
-  <img src="images/logo.png" class="logo" alt="logo">
-  <a href="login.html" class="login-button">Login</a>
-</header>
+      <article class="place-details">
+        <img
+          src="images/place1.jpg"
+          alt="Cozy Paris Apartment"
+          class="hero"
+        />
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="login.html">Login</a>
-</nav>
+        <h1>Cozy Paris Apartment</h1>
 
-<main>
+        <div class="place-info">
+          <div class="info-item">
+            <p class="label">Host</p>
+            <p class="value">Marie Dupont</p>
+          </div>
+          <div class="info-item">
+            <p class="label">Price per night</p>
+            <p class="value accent">$120</p>
+          </div>
+          <div class="info-item">
+            <p class="label">Location</p>
+            <p class="value">Paris, France</p>
+          </div>
+          <div class="info-item">
+            <p class="label">Guests</p>
+            <p class="value">Up to 4</p>
+          </div>
+        </div>
 
-<h1>Place Details</h1>
+        <p class="description">
+          A charming and cozy apartment located in the heart of Paris, just
+          minutes away from the Eiffel Tower. This bright and tastefully
+          decorated space offers everything you need for a perfect Parisian
+          stay. Enjoy the authentic Haussmann architecture and the vibrant
+          neighborhood full of cafés, bakeries, and boutiques.
+        </p>
 
-<div class="place-details">
-  <h2>Nice House</h2>
+        <h2>Amenities</h2>
+        <ul class="amenities">
+          <li class="amenity-tag">WiFi</li>
+          <li class="amenity-tag">Air Conditioning</li>
+          <li class="amenity-tag">Kitchen</li>
+          <li class="amenity-tag">Washer</li>
+          <li class="amenity-tag">TV</li>
+          <li class="amenity-tag">Balcony</li>
+          <li class="amenity-tag">Elevator</li>
+        </ul>
+      </article>
 
-  <div class="place-info">
-    <p><strong>Host:</strong> John</p>
-    <p><strong>Price:</strong> $100</p>
-    <p><strong>Description:</strong> Very nice place</p>
-  </div>
-</div>
+      <section class="reviews-section">
+        <h2>Reviews</h2>
 
-<h2>Reviews</h2>
+        <div class="review-card">
+          <div class="reviewer">
+            <div class="reviewer-avatar">J</div>
+            <span class="reviewer-name">John Smith</span>
+          </div>
+          <p class="review-rating">&#9733;&#9733;&#9733;&#9733;&#9733; 5/5</p>
+          <p class="review-comment">
+            Absolutely loved this place! The location is unbeatable and Marie
+            was the perfect host. The apartment is exactly as described — clean,
+            bright, and full of charm. Would definitely come back!
+          </p>
+        </div>
 
-<div class="review-card">
-  <p><strong>Comment:</strong> Awesome place!</p>
-  <p><strong>User:</strong> Alice</p>
-  <p><strong>Rating:</strong> 5</p>
-</div>
+        <div class="review-card">
+          <div class="reviewer">
+            <div class="reviewer-avatar">A</div>
+            <span class="reviewer-name">Anna Müller</span>
+          </div>
+          <p class="review-rating">&#9733;&#9733;&#9733;&#9733; 4/5</p>
+          <p class="review-comment">
+            Great apartment in a fantastic location. Very comfortable and well
+            equipped. Only minor issue was the street noise in the morning, but
+            nothing that ruined the experience. Highly recommended!
+          </p>
+        </div>
 
-<!-- Tu peux ajouter d'autres reviews si tu veux -->
-<div class="review-card">
-  <p><strong>Comment:</strong> Very clean and comfortable</p>
-  <p><strong>User:</strong> Bob</p>
-  <p><strong>Rating:</strong> 4</p>
-</div>
+      </section>
 
-<!-- Bouton Add Review -->
-<a href="add_review.html">
-  <button>Add Review</button>
-</a>
+      <!-- Show this button only if user is authenticated -->
+      <div id="add-review-btn" style="margin-top: 24px;">
+        <a href="add_review.html" class="details-button">Add a Review</a>
+      </div>
 
-</main>
+    </main>
 
-<footer>
-  <p>All rights reserved</p>
-</footer>
+    <footer>
+      <p>&copy; 2026 HBnB. All rights reserved.</p>
+    </footer>
 
-</body>
+    <script src="place.js"></script>
+  </body>
 </html>
