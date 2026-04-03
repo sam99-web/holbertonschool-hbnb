@@ -1,0 +1,27 @@
+body {
+  font-family: Arial;
+}
+
+header, nav, footer {
+  padding: 10px;
+  background-color: #f4f4f4;
+}
+
+.logo {
+  width: 50px;
+}
+
+.login-button {
+  float: right;
+}
+
+.place-card, .review-card {
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.details-button {
+  margin-top: 10px;
+}
