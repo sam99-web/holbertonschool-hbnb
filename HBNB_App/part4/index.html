@@ -11,77 +11,27 @@
       <img src="logo.png" alt="HBnB Logo" class="logo" />
       <nav>
         <a href="index.html">Home</a>
-        <a href="login.html" class="login-button">Login</a>
+        <a href="login.html" id="login-link" class="login-button">Login</a>
       </nav>
     </header>
-
     <main>
       <h1 class="page-title">Discover Places</h1>
       <p class="page-subtitle">Find the perfect place for your next adventure</p>
-
       <div class="filter-bar">
-        <label for="country-filter">Filter by country:</label>
-        <select id="country-filter">
-          <option value="all">All Countries</option>
-          <option value="france">France</option>
-          <option value="usa">United States</option>
-          <option value="spain">Spain</option>
-          <option value="italy">Italy</option>
-          <option value="japan">Japan</option>
+        <label for="price-filter">Filter by price:</label>
+        <select id="price-filter">
+          <option value="all">All</option>
+          <option value="10">$10</option>
+          <option value="50">$50</option>
+          <option value="100">$100</option>
         </select>
       </div>
-
       <section class="places-grid" id="places-list">
-
-        <article class="place-card" data-country="france">
-          <img src="images/place1.jpg" alt="Cozy Paris Apartment" />
-          <h3>Cozy Paris Apartment</h3>
-          <p class="price">$120 / night</p>
-          <a href="place.html" class="details-button">View Details</a>
-        </article>
-
-        <article class="place-card" data-country="usa">
-          <img src="images/place2.jpg" alt="NYC Loft" />
-          <h3>NYC Loft Downtown</h3>
-          <p class="price">$200 / night</p>
-          <a href="place.html" class="details-button">View Details</a>
-        </article>
-
-        <article class="place-card" data-country="spain">
-          <img src="images/place3.jpg" alt="Barcelona Penthouse" />
-          <h3>Barcelona Penthouse</h3>
-          <p class="price">$175 / night</p>
-          <a href="place.html" class="details-button">View Details</a>
-        </article>
-
-        <article class="place-card" data-country="italy">
-          <img src="images/place4.jpg" alt="Rome Historic Villa" />
-          <h3>Rome Historic Villa</h3>
-          <p class="price">$250 / night</p>
-          <a href="place.html" class="details-button">View Details</a>
-        </article>
-
-        <article class="place-card" data-country="japan">
-          <img src="images/place5.jpg" alt="Tokyo Studio" />
-          <h3>Tokyo Modern Studio</h3>
-          <p class="price">$90 / night</p>
-          <a href="place.html" class="details-button">View Details</a>
-        </article>
-
-        <article class="place-card" data-country="france">
-          <img src="images/place6.jpg" alt="Nice Beachfront" />
-          <h3>Nice Beachfront Suite</h3>
-          <p class="price">$310 / night</p>
-          <a href="place.html" class="details-button">View Details</a>
-        </article>
-
       </section>
     </main>
-
     <footer>
       <p>&copy; 2026 HBnB. All rights reserved.</p>
     </footer>
-
     <script src="index.js"></script>
   </body>
 </html>

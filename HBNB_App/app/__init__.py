@@ -1,12 +1,13 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_restx import Api
 from config import DevelopmentConfig
 from app.extensions import bcrypt, jwt, db
 
-
 def create_app(config_class=DevelopmentConfig):
     """Application factory pattern"""
     app = Flask(__name__)
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     app.config.from_object(config_class)
 
     # Initialisation des extensions Flask
@@ -35,9 +36,18 @@ def create_app(config_class=DevelopmentConfig):
     api.add_namespace(reviews_ns,   path='/reviews')
     api.add_namespace(auth_ns,      path='/auth')
 
-    # Création des tables SQLAlchemy au démarrage (si elles n'existent pas encore).
-    # Les modèles User, Place, Review et Amenity sont mappés → leurs tables sont créées.
     with app.app_context():
         db.create_all()
+        from app.models.user import User
+        if not User.query.filter_by(email="admin@hbnb.io").first():
+            admin = User(
+                first_name="Admin",
+                last_name="HBnB",
+                email="admin@hbnb.io",
+                password="Admin1234!",
+                is_admin=True
+            )
+            db.session.add(admin)
+            db.session.commit()
 
     return app
