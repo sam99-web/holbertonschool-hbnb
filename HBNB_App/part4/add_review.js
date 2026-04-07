@@ -1,20 +1,60 @@
-const form = document.getElementById("review-form");
+document.addEventListener('DOMContentLoaded', () => {
+    const token = getCookie('token');
+    const placeId = getPlaceIdFromURL();
 
-form.addEventListener("submit", function (event) {
-  event.preventDefault(); // empêche le rechargement de la page
+    // Redirige si non authentifié
+    if (!token) {
+        window.location.href = 'index.html';
+        return;
+    }
 
-  // Récupérer les données
-  const comment = document.getElementById("comment").value;
+    const form = document.getElementById('review-form');
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-  const rating = document.querySelector('input[name="rating"]:checked');
+        const comment = document.getElementById('comment').value;
+        const rating = document.querySelector('input[name="rating"]:checked');
 
-  if (!rating) {
-    alert("Please select a rating ⭐");
-    return;
-  }
+        if (!rating) {
+            alert('Please select a rating ⭐');
+            return;
+        }
 
-  alert("Review submitted ! 🎉\nRating: " + rating.value + "\nComment: " + comment);
+        try {
+            const response = await fetch(`http://localhost:5001/api/v1/reviews/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    text: comment,
+                    rating: parseInt(rating.value),
+                    place_id: placeId
+                })
+            });
 
-  // Optionnel : reset du formulaire
-  form.reset();
+            if (response.ok) {
+                alert('Review submitted! 🎉');
+                window.location.href = `place.html?id=${placeId}`;
+            } else {
+                const data = await response.json();
+                alert('Error: ' + JSON.stringify(data));
+            }
+        } catch (error) {
+            alert('Network error: ' + error.message);
+        }
+    });
 });
+
+function getCookie(name) {
+    const value = document.cookie
+        .split('; ')
+        .find(row => row.startsWith(name + '='));
+    return value ? value.split('=')[1] : null;
+}
+
+function getPlaceIdFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+}
